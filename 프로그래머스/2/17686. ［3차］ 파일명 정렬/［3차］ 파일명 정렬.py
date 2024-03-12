@@ -7,7 +7,7 @@ def solution(files):
 def detail_of(file):
     ret = ["","",""]
     
-    while file and (file[0].isalpha() or file[0] in [' ', '.', '-']):
+    while not file[0].isdigit():
         ret[0] += file[0]
         file = file[1:]
         
