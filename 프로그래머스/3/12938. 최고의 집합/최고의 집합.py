@@ -4,4 +4,3 @@ def solution(n, s):
         return [-1]
     
     return [base] * (n-remain) + [base + 1] * remain
-    
