@@ -1,8 +1,2 @@
 def solution(arr):
-    answer = []
-    while arr:
-        item = arr.pop()
-        if len(answer) == 0 or answer[-1] != item:
-            answer.append(item)
-
-    return answer[::-1]
+    return [x for x, y in zip(arr, [None] + arr) if x != y]
