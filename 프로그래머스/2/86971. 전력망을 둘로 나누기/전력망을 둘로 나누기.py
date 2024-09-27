@@ -1,37 +1,46 @@
 from collections import deque
 
-def solution(n, wires):
-    answer = float("INF")
-    for i in range(n-1):
-        answer = min(answer, search(n, wires[:i] + wires[i+1:]))
-    return answer
-
-def search(n, wires):
-    ret = []
-    
-    # 초기화
-    graph = [[] for _ in range(n+1)]
+def bfs(n, graph):
+    areas = []
     visited = [False] * (n+1)
-    for i, j in wires:
-        graph[i].append(j)
-        graph[j].append(i)
-    
     for node in range(1, n+1):
-        if visited[node]:
-            continue
+        if not visited[node]: # 첫 방문 노드에 대해 bfs 탐색
+            area_size = 1
+            visited[node] = True
+            q = deque([node])
             
-        # 방문하지 않은 첫 노드에 대해 bfs 탐색
-        cnt = 1
-        q = deque([node])
-        visited[node] = True
-        while q:
-            _node = q.popleft()
-            for connected_node in graph[_node]:
-                if not visited[connected_node]:
-                    cnt += 1
-                    visited[connected_node] = True
-                    q.append(connected_node)
+            while q:
+                now = q.popleft()
+                for next_node in graph[now]:
+                    if not visited[next_node]:
+                        visited[next_node] = True
+                        area_size += 1
+                        q.append(next_node)
+                    
+            areas.append(area_size)
             
-        ret.append(cnt)
-    return abs(ret[0]-ret[1])        
+    return areas
+
+def solution(n, wires):
+    min_diff = float('inf')
+    graph = [set() for _ in range(n+1)]
     
+    for wire in wires:
+        graph[wire[0]].add(wire[1])
+        graph[wire[1]].add(wire[0])
+    
+    for wire in wires:
+        # 연결 제거
+        graph[wire[0]].remove(wire[1])
+        graph[wire[1]].remove(wire[0])
+        
+        # 그래프 탐색
+        areas = bfs(n, graph)
+        min_diff = min(min_diff, abs(areas[0]-areas[1]))
+        
+        # 연결 복원
+        graph[wire[0]].add(wire[1])
+        graph[wire[1]].add(wire[0])
+        
+    return min_diff
+        
