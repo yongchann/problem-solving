@@ -1,0 +1,1 @@
+print(sum([(i**2)%10 for i in list(map(int, input().split()))])%10)
