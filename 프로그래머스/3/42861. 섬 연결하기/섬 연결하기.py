@@ -1,37 +1,23 @@
-def find(parent, i):
-    if parent[i] == i:
-        return i
-    return find(parent, parent[i])
-
-def union(parent, rank, x, y):
-    xroot = find(parent, x)
-    yroot = find(parent, y)
-    
-    if rank[xroot] < rank[yroot]:
-        parent[xroot] = yroot
-    elif rank[xroot] > rank[yroot]:
-        parent[yroot] = xroot
-    else:
-        parent[yroot] = xroot
-        rank[xroot] += 1
+from heapq import heappush, heappop
 
 def solution(n, costs):
-    costs.sort(key=lambda x: x[2])
-    parent = list(range(n))
-    rank = [0] * n
+    graph = [set() for _ in range(n)]
+    for a, b, cost in costs:
+        graph[a].add((b, cost))
+        graph[b].add((a, cost))
     
-    total_cost = 0
-    edges = 0
-    
-    for cost in costs:
-        x, y, weight = cost
+    start = 0
+    visited = set()
+    pq = [(0, start)]
+    answer = 0
+    while pq:
+        cost, node = heappop(pq)
+        if node in visited:
+            continue
         
-        if find(parent, x) != find(parent, y):
-            union(parent, rank, x, y)
-            total_cost += weight
-            edges += 1
+        answer += cost
+        visited.add(node)
         
-        if edges == n - 1:
-            break
-    
-    return total_cost
+        for neighbor, cost in graph[node]:
+            heappush(pq, (cost, neighbor))
+    return answer
